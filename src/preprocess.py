@@ -20,9 +20,25 @@ def load_and_preprocess(csv_path):
     # Step 5 — Encode target column Churn
     customer_data["Churn"] = customer_data["Churn"].map({"Yes": 1, "No": 0})
 
-    # Step 6 — Separate features and target
+    # Step 5.5 — Separate features and target
     target = customer_data["Churn"]
     features = customer_data.drop(columns=["Churn"])
+
+    # Step 6 — Feature Engineering (new signals for the model)
+    # B1: Average monthly charge captures payment intensity per month
+    features["AvgMonthlyCharge"] = features["TotalCharges"] / (features["tenure"] + 1)
+
+    # B2: Flag new customers (tenure < 12 months)
+    features["IsNewCustomer"] = (features["tenure"] < 12).astype(int)
+
+    # B3: Count of services the customer is subscribed to
+    service_columns = ["MultipleLines", "OnlineSecurity", "OnlineBackup",
+                       "DeviceProtection", "TechSupport", "StreamingTV", "StreamingMovies"]
+    existing_service_cols = [col for col in service_columns if col in features.columns]
+    features["HasMultipleServices"] = (
+        features[existing_service_cols]
+        .apply(lambda row: (row == "Yes").sum(), axis=1)
+    )
 
     # Step 7 — One-hot encode all categorical (object) columns
     features = pd.get_dummies(features)

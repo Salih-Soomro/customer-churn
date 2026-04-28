@@ -60,6 +60,17 @@ def predict():
         median_value = customer_data["TotalCharges"].median()
         customer_data["TotalCharges"] = customer_data["TotalCharges"].fillna(median_value)
 
+        # Feature engineering (must match preprocess.py)
+        customer_data["AvgMonthlyCharge"] = customer_data["TotalCharges"] / (customer_data["tenure"] + 1)
+        customer_data["IsNewCustomer"] = (customer_data["tenure"] < 12).astype(int)
+        service_columns = ["MultipleLines", "OnlineSecurity", "OnlineBackup",
+                           "DeviceProtection", "TechSupport", "StreamingTV", "StreamingMovies"]
+        existing_service_cols = [col for col in service_columns if col in customer_data.columns]
+        customer_data["HasMultipleServices"] = (
+            customer_data[existing_service_cols]
+            .apply(lambda row: (row == "Yes").sum(), axis=1)
+        )
+
         customer_data = pd.get_dummies(customer_data)
 
         # Align columns to match exactly what the model was trained on

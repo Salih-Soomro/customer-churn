@@ -1,7 +1,7 @@
 # Project Status & Blueprint
 
 ## Current Status
-Step: 8 — PROJECT COMPLETE (Improvements Applied)
+Step: 8 — PROJECT COMPLETE (Accuracy Fix Applied)
 Last updated: 2026-04-28
 
 ## Steps Checklist
@@ -19,25 +19,29 @@ Last updated: 2026-04-28
 - File: data/raw/telco_churn.csv
 - Target column: Churn
 - Known issues: TotalCharges stored as string, converted to numeric
-- Features used: 45
+- Engineered features: AvgMonthlyCharge, IsNewCustomer, HasMultipleServices
+- Features used: 48+
 
 ## Model Performance
-| Model               | Accuracy | Precision | Recall | F1 Score |
-|---------------------|----------|-----------|--------|----------|
-| Logistic Regression | 0.7509   | 0.5185    | 0.8284 | 0.6378   |
-| Decision Tree       | 0.7154   | 0.4641    | 0.4853 | 0.4744   |
-| Random Forest       | 0.7871   | 0.6377    | 0.4531 | 0.5298   |
-| Gradient Boosting   | 0.8020   | 0.6526    | 0.5389 | 0.5903   |
+| Model               | Accuracy | Precision | Recall | F1 Score | CV F1  |
+|---------------------|----------|-----------|--------|----------|--------|
+| Logistic Regression | 0.7622   | 0.5330    | 0.8231 | 0.6470   | 0.6226 |
+| Decision Tree       | 0.7466   | 0.5221    | 0.5067 | 0.5143   | 0.4859 |
+| Random Forest       | 0.7963   | 0.6680    | 0.4584 | 0.5437   | 0.5410 |
+| Gradient Boosting   | 0.7622   | 0.5321    | 0.8445 | 0.6528   | 0.7730 |
 
 ## Best Model
-Name: Logistic Regression (tuned via GridSearchCV, C=0.1, class_weight='balanced')
+Name: Gradient Boosting (tuned via GridSearchCV with scoring='f1')
+Best params: learning_rate=0.05, max_depth=3, n_estimators=100
 Saved as: models/best_model.pkl
 
 ## Improvements Applied
-- class_weight='balanced' added to Logistic Regression and Random Forest
-- GradientBoostingClassifier added as 4th model
+- class_weight='balanced' added to LR, DT, and RF
+- compute_sample_weight('balanced') used for GradientBoosting
+- GridSearchCV scoring corrected to 'f1' (was defaulting to accuracy)
+- Feature engineering: AvgMonthlyCharge, IsNewCustomer, HasMultipleServices
 - 5-fold cross-validation for all models
-- GridSearchCV hyperparameter tuning for best model
+- Expanded hyperparameter grids for GridSearchCV
 - Churn probability display (predict_proba) in results
 - Table filtering (Show All / High Risk Only)
 - Pagination (50 rows per page)
@@ -55,9 +59,10 @@ Saved as: models/best_model.pkl
 ## Final Summary
 This project is an AI-powered web application that predicts customer churn
 using four machine learning models trained on the Kaggle Telco dataset.
-The best performing model is saved and served via a Flask web interface.
-Users can upload a CSV file, view churn predictions with probability scores
-per customer, and see personalized retention recommendations for high-risk customers.
+The best performing model (Gradient Boosting) is saved and served via a Flask
+web interface. Users can upload a CSV file, view churn predictions with
+probability scores per customer, and see personalized retention recommendations
+for high-risk customers.
 
 ## Known Issues / TODOs
 None — project is complete.
