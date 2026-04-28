@@ -8,7 +8,7 @@ Last updated: 2026-04-28
 - [x] Step 0: Project structure, README, this file
 - [x] Step 1: Data exploration and EDA
 - [x] Step 2: Data preprocessing
-- [ ] Step 3: Model training
+- [x] Step 3: Model training
 - [ ] Step 4: Model evaluation
 - [ ] Step 5: Retention recommendation agent
 - [ ] Step 6: Flask web app backend
@@ -28,12 +28,12 @@ Last updated: 2026-04-28
 ## Model Performance (fill after Step 4)
 | Model               | Accuracy | Precision | Recall | F1 Score |
 |---------------------|----------|-----------|--------|----------|
-| Logistic Regression |          |           |        |          |
-| Decision Tree       |          |           |        |          |
-| Random Forest       |          |           |        |          |
+| Logistic Regression | 0.8197   |           |        | 0.6361   |
+| Decision Tree       | 0.7154   |           |        | 0.4744   |
+| Random Forest       | 0.7970   |           |        | 0.5531   |
 
 ## Best Model
-Name: [fill after Step 4]
+Name: Logistic Regression
 Saved as: models/best_model.pkl
 
 ## Retention Rules (fill after Step 5)
