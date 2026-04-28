@@ -9,7 +9,7 @@ Last updated: 2026-04-28
 - [x] Step 1: Data exploration and EDA
 - [x] Step 2: Data preprocessing
 - [x] Step 3: Model training
-- [ ] Step 4: Model evaluation
+- [x] Step 4: Model evaluation
 - [ ] Step 5: Retention recommendation agent
 - [ ] Step 6: Flask web app backend
 - [ ] Step 7: HTML/CSS frontend
@@ -28,7 +28,7 @@ Last updated: 2026-04-28
 ## Model Performance (fill after Step 4)
 | Model               | Accuracy | Precision | Recall | F1 Score |
 |---------------------|----------|-----------|--------|----------|
-| Logistic Regression | 0.8197   |           |        | 0.6361   |
+| Logistic Regression | 0.8197   | 0.6831    | 0.5952 | 0.6361   |
 | Decision Tree       | 0.7154   |           |        | 0.4744   |
 | Random Forest       | 0.7970   |           |        | 0.5531   |
 
