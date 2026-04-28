@@ -1,7 +1,7 @@
 # Project Status & Blueprint
 
 ## Current Status
-Step: 1 — EDA complete
+Step: 2 — Data preprocessing complete
 Last updated: 2026-04-28
 
 ## Steps Checklist
