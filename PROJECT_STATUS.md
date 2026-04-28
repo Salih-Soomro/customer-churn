@@ -1,7 +1,7 @@
 # Project Status & Blueprint
 
 ## Current Status
-Step: 2 — Data preprocessing complete
+Step: 3 — Model training complete
 Last updated: 2026-04-28
 
 ## Steps Checklist
