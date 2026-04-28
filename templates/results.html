@@ -55,17 +55,23 @@
         </div>
         {% endif %}
 
+        <div class="filter-bar">
+            <button class="filter-btn active" id="btn-all" onclick="filterTable('all')">Show All</button>
+            <button class="filter-btn" id="btn-risk" onclick="filterTable('risk')">High Risk Only</button>
+        </div>
+
         <div class="table-card">
             <div class="table-toolbar">
                 <div class="table-title">Customer Predictions</div>
                 <div class="table-count">{{ results | length }} records</div>
             </div>
             <div class="table-scroll">
-                <table class="results-table">
+                <table class="results-table" id="results-table">
                     <thead>
                         <tr>
                             <th>CUSTOMER</th>
                             <th>CHURN RISK</th>
+                            <th>PROBABILITY</th>
                             <th>RETENTION RECOMMENDATIONS</th>
                         </tr>
                     </thead>
@@ -79,6 +85,14 @@
                                 {% else %}
                                     <span class="badge badge-safe">● Safe</span>
                                 {% endif %}
+                            </td>
+                            <td>
+                                <div class="prob-bar-wrap">
+                                    <div class="prob-bar" style="width: {{ row.churn_probability }}%;
+                                        background: {% if row.churn_predicted == 1 %}#f87171{% else %}#4ade80{% endif %};">
+                                    </div>
+                                    <span class="prob-label">{{ row.churn_probability }}%</span>
+                                </div>
                             </td>
                             <td>
                                 {% if row.recommendations %}
@@ -98,6 +112,12 @@
             </div>
         </div>
 
+        <div class="pagination-bar" id="pagination-bar">
+            <button class="pagination-btn" id="btn-prev" onclick="changePage(-1)">← Previous</button>
+            <span class="pagination-info" id="page-info">Page 1 of 1</span>
+            <button class="pagination-btn" id="btn-next" onclick="changePage(1)">Next →</button>
+        </div>
+
         <div class="results-footer">
             <a href="/" class="btn-primary">
                 <span>Analyse Another File</span>
@@ -105,5 +125,69 @@
             </a>
         </div>
     </main>
+
+    <script>
+        // ── Filter Logic ──
+        let currentFilter = 'all';
+
+        function filterTable(mode) {
+            currentFilter = mode;
+            currentPage = 1;
+            renderPage();
+            document.getElementById('btn-all').classList.toggle('active', mode === 'all');
+            document.getElementById('btn-risk').classList.toggle('active', mode === 'risk');
+        }
+
+        // ── Pagination Logic ──
+        const ROWS_PER_PAGE = 50;
+        let currentPage = 1;
+
+        function getFilteredRows() {
+            const allRows = Array.from(document.querySelectorAll('#results-table tbody tr'));
+            if (currentFilter === 'risk') {
+                return allRows.filter(row => !row.classList.contains('row-safe'));
+            }
+            return allRows;
+        }
+
+        function renderPage() {
+            const allRows = Array.from(document.querySelectorAll('#results-table tbody tr'));
+            const filteredRows = getFilteredRows();
+            const totalPages = Math.max(1, Math.ceil(filteredRows.length / ROWS_PER_PAGE));
+
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const start = (currentPage - 1) * ROWS_PER_PAGE;
+            const end = start + ROWS_PER_PAGE;
+
+            // Hide all rows first
+            allRows.forEach(row => row.style.display = 'none');
+
+            // Show only the rows for the current page that match the filter
+            filteredRows.forEach((row, index) => {
+                if (index >= start && index < end) {
+                    row.style.display = '';
+                }
+            });
+
+            // Update pagination info
+            document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('btn-prev').disabled = (currentPage <= 1);
+            document.getElementById('btn-next').disabled = (currentPage >= totalPages);
+        }
+
+        function changePage(delta) {
+            const filteredRows = getFilteredRows();
+            const totalPages = Math.max(1, Math.ceil(filteredRows.length / ROWS_PER_PAGE));
+            const newPage = currentPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderPage();
+            }
+        }
+
+        // Initialize pagination on load
+        renderPage();
+    </script>
 </body>
 </html>

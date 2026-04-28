@@ -560,3 +560,96 @@ body {
     width: auto;
     padding: 13px 36px;
 }
+
+/* ── Probability Bar ─────────────────────── */
+.prob-bar-wrap {
+    position: relative;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    margin-top: 4px;
+}
+
+.prob-bar {
+    position: absolute;
+    height: 100%;
+    border-radius: 4px;
+    opacity: 0.8;
+}
+
+.prob-label {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* ── Filter Bar ──────────────────────────── */
+.filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.filter-btn {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    border-color: var(--border-accent);
+    color: var(--text-primary);
+}
+
+.filter-btn.active {
+    background: rgba(99,102,241,0.15);
+    color: var(--indigo-light);
+    border-color: var(--border-accent);
+}
+
+/* ── Pagination ──────────────────────────── */
+.pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.pagination-btn {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    border-color: var(--border-accent);
+    color: var(--text-primary);
+    background: rgba(99,102,241,0.06);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+}

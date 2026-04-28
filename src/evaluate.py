@@ -76,3 +76,36 @@ if __name__ == "__main__":
     plt.savefig("outputs/evaluation/roc_curve.png")
     plt.close()
     print("Saved: outputs/evaluation/roc_curve.png")
+
+    # 4g. Plot 3 — Feature Importance
+    feature_names_list = list(feature_names)
+
+    if hasattr(best_model, 'feature_importances_'):
+        # Tree-based models (RandomForest, GradientBoosting, DecisionTree)
+        importances = best_model.feature_importances_
+        title = "Top 15 Feature Importances"
+    elif hasattr(best_model, 'coef_'):
+        # Linear models (LogisticRegression)
+        importances = np.abs(best_model.coef_[0])
+        title = "Top 15 Feature Importances (Logistic Regression Coefficients)"
+    else:
+        importances = None
+        title = None
+
+    if importances is not None:
+        # Get top 15 features
+        indices = np.argsort(importances)[-15:]
+        top_features = [feature_names_list[i] for i in indices]
+        top_importances = importances[indices]
+
+        plt.figure(figsize=(10, 7))
+        sns.barplot(x=top_importances, y=top_features, palette="Blues_d")
+        plt.title(title)
+        plt.xlabel("Importance")
+        plt.ylabel("Feature")
+        plt.tight_layout()
+        plt.savefig("outputs/evaluation/feature_importance.png")
+        plt.close()
+        print("Saved: outputs/evaluation/feature_importance.png")
+    else:
+        print("Warning: Best model has no feature_importances_ or coef_ attribute. Skipping feature importance plot.")

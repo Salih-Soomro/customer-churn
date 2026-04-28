@@ -4,8 +4,11 @@ import joblib
 import pandas as pd
 from flask import Flask, request, render_template, redirect, url_for, flash
 
+# Fix 4 — Absolute paths instead of hardcoded relative paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Ensure the app can import src/recommend.py
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
+sys.path.append(os.path.join(BASE_DIR, "src"))
 from recommend import get_retention_recommendation
 
 app = Flask(__name__)
@@ -39,10 +42,10 @@ def predict():
         # Step 3 — Keep a copy of original data for recommendations
         original_data = customer_data.copy()
 
-        # Step 4 — Load saved model files
-        best_model = joblib.load("models/best_model.pkl")
-        scaler = joblib.load("models/scaler.pkl")
-        feature_names = joblib.load("models/feature_names.pkl")
+        # Step 4 — Load saved model files (using absolute paths)
+        best_model = joblib.load(os.path.join(BASE_DIR, "models", "best_model.pkl"))
+        scaler = joblib.load(os.path.join(BASE_DIR, "models", "scaler.pkl"))
+        feature_names = joblib.load(os.path.join(BASE_DIR, "models", "feature_names.pkl"))
 
         # Step 5 — Preprocess the uploaded data
         if "customerID" in customer_data.columns:
@@ -64,8 +67,9 @@ def predict():
 
         scaled_data = scaler.transform(customer_data)
 
-        # Step 6 — Run predictions
+        # Step 6 — Run predictions and get churn probabilities
         predictions = best_model.predict(scaled_data)
+        churn_probabilities = best_model.predict_proba(scaled_data)[:, 1]
 
         # Step 7 — Build results list
         results = []
@@ -82,6 +86,7 @@ def predict():
             results.append({
                 "customer_index": i + 1,
                 "churn_predicted": churn_predicted,
+                "churn_probability": round(float(churn_probabilities[i]) * 100, 1),
                 "recommendations": recommendations
             })
 

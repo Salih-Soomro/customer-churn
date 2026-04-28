@@ -1,7 +1,7 @@
 # Project Status & Blueprint
 
 ## Current Status
-Step: 8 — PROJECT COMPLETE
+Step: 8 — PROJECT COMPLETE (Improvements Applied)
 Last updated: 2026-04-28
 
 ## Steps Checklist
@@ -24,13 +24,25 @@ Last updated: 2026-04-28
 ## Model Performance
 | Model               | Accuracy | Precision | Recall | F1 Score |
 |---------------------|----------|-----------|--------|----------|
-| Logistic Regression | 0.8197   | 0.6831    | 0.5952 | 0.6361   |
-| Decision Tree       | 0.7154   | 0.4632    | 0.4863 | 0.4744   |
-| Random Forest       | 0.7970   | 0.6480    | 0.4826 | 0.5531   |
+| Logistic Regression | 0.7509   | 0.5185    | 0.8284 | 0.6378   |
+| Decision Tree       | 0.7154   | 0.4641    | 0.4853 | 0.4744   |
+| Random Forest       | 0.7871   | 0.6377    | 0.4531 | 0.5298   |
+| Gradient Boosting   | 0.8020   | 0.6526    | 0.5389 | 0.5903   |
 
 ## Best Model
-Name: Logistic Regression
+Name: Logistic Regression (tuned via GridSearchCV, C=0.1, class_weight='balanced')
 Saved as: models/best_model.pkl
+
+## Improvements Applied
+- class_weight='balanced' added to Logistic Regression and Random Forest
+- GradientBoostingClassifier added as 4th model
+- 5-fold cross-validation for all models
+- GridSearchCV hyperparameter tuning for best model
+- Churn probability display (predict_proba) in results
+- Table filtering (Show All / High Risk Only)
+- Pagination (50 rows per page)
+- Feature importance chart saved to outputs/evaluation/feature_importance.png
+- Hardcoded paths replaced with absolute paths (BASE_DIR)
 
 ## Retention Rules
 1. MonthlyCharges > 70        → Offer a discounted monthly plan
@@ -42,10 +54,10 @@ Saved as: models/best_model.pkl
 
 ## Final Summary
 This project is an AI-powered web application that predicts customer churn
-using three machine learning models trained on the Kaggle Telco dataset.
+using four machine learning models trained on the Kaggle Telco dataset.
 The best performing model is saved and served via a Flask web interface.
-Users can upload a CSV file, view churn predictions per customer, and see
-personalized retention recommendations for high-risk customers.
+Users can upload a CSV file, view churn predictions with probability scores
+per customer, and see personalized retention recommendations for high-risk customers.
 
 ## Known Issues / TODOs
 None — project is complete.
