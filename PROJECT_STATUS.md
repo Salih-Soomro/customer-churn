@@ -1,7 +1,7 @@
 # Project Status & Blueprint
 
 ## Current Status
-Step: 5 — Retention agent complete
+Step: 6 — Flask backend complete
 Last updated: 2026-04-28
 
 ## Steps Checklist
