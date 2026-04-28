@@ -25,8 +25,8 @@ Last updated: 2026-04-28
 | Model               | Accuracy | Precision | Recall | F1 Score |
 |---------------------|----------|-----------|--------|----------|
 | Logistic Regression | 0.8197   | 0.6831    | 0.5952 | 0.6361   |
-| Decision Tree       | 0.7154   |           |        | 0.4744   |
-| Random Forest       | 0.7970   |           |        | 0.5531   |
+| Decision Tree       | 0.7154   | 0.4632    | 0.4863 | 0.4744   |
+| Random Forest       | 0.7970   | 0.6480    | 0.4826 | 0.5531   |
 
 ## Best Model
 Name: Logistic Regression
