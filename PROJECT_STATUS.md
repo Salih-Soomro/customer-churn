@@ -12,7 +12,7 @@ Last updated: 2026-04-28
 - [x] Step 4: Model evaluation
 - [x] Step 5: Retention recommendation agent
 - [x] Step 6: Flask web app backend
-- [ ] Step 7: HTML/CSS frontend
+- [x] Step 7: Frontend HTML and CSS complete
 - [ ] Step 8: End-to-end testing and final cleanup
 
 ## Dataset Notes
