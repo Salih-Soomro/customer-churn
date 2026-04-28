@@ -1,1 +1,99 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChurnGuard AI — Customer Churn Predictor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-inner">
+            <div class="nav-brand">
+                <div class="brand-icon">⬡</div>
+                <span class="brand-name">ChurnGuard <span class="brand-accent">AI</span></span>
+            </div>
+            <div class="nav-badge">ML-Powered Analytics</div>
+        </div>
+    </nav>
+
+    <main class="main-layout">
+        <div class="hero-section">
+            <div class="hero-eyebrow">▸ POWERED BY RANDOM FOREST & LOGISTIC REGRESSION</div>
+            <h1 class="hero-title">Predict. Understand.<br><span class="hero-accent">Retain.</span></h1>
+            <p class="hero-subtitle">
+                Upload your customer dataset and let AI instantly identify who is at risk of churning — with actionable retention strategies for each customer.
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert-error">
+                    <span class="alert-icon">⚠</span>
+                    {% for message in messages %}
+                        <span>{{ message }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="card upload-card">
+            <div class="card-header">
+                <div class="card-title">Upload Customer Data</div>
+                <div class="card-subtitle">Accepts Telco-format CSV files</div>
+            </div>
+
+            <form action="/predict" method="POST" enctype="multipart/form-data">
+                <label for="file" class="drop-zone" id="drop-zone">
+                    <div class="drop-icon">↑</div>
+                    <div class="drop-primary">Drop your CSV file here</div>
+                    <div class="drop-secondary">or <span class="drop-link">browse to upload</span></div>
+                    <div class="drop-hint" id="file-name-display">Supports .csv format only</div>
+                    <input type="file" id="file" name="file" accept=".csv" required>
+                </label>
+
+                <button type="submit" class="btn-primary">
+                    <span>Run Churn Analysis</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <div class="step-text">Upload a CSV with customer data in Telco format</div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <div class="step-text">AI model analyses each customer's profile and usage patterns</div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <div class="step-text">High-risk customers are flagged with a churn prediction</div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">04</div>
+                <div class="step-text">Personalised retention actions are recommended instantly</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const fileInput = document.getElementById('file');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const dropZone = document.getElementById('drop-zone');
+
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                fileNameDisplay.textContent = '✓ ' + this.files[0].name;
+                fileNameDisplay.style.color = '#818cf8';
+                dropZone.style.borderColor = 'rgba(99,102,241,0.7)';
+                dropZone.style.background = 'rgba(99,102,241,0.07)';
+            }
+        });
+    </script>
+</body>
+</html>

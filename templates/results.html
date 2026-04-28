@@ -1,1 +1,109 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results — ChurnGuard AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-inner">
+            <div class="nav-brand">
+                <div class="brand-icon">⬡</div>
+                <span class="brand-name">ChurnGuard <span class="brand-accent">AI</span></span>
+            </div>
+            <a href="/" class="btn-back-nav">← New Analysis</a>
+        </div>
+    </nav>
+
+    <main class="main-layout">
+        <div class="results-header">
+            <div class="hero-eyebrow">▸ ANALYSIS COMPLETE</div>
+            <h1 class="hero-title">Prediction <span class="hero-accent">Results</span></h1>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value mono">{{ total_customers }}</div>
+                <div class="stat-label">TOTAL CUSTOMERS</div>
+                <div class="stat-bar" style="--fill: 100%; --color: #6366f1;"></div>
+            </div>
+            <div class="stat-card stat-danger">
+                <div class="stat-value mono danger-text">{{ total_churners }}</div>
+                <div class="stat-label">PREDICTED TO CHURN</div>
+                <div class="stat-bar" style="--fill: {{ ((total_churners / total_customers) * 100) | int }}%; --color: #f87171;"></div>
+            </div>
+            <div class="stat-card stat-success">
+                <div class="stat-value mono success-text">{{ total_customers - total_churners }}</div>
+                <div class="stat-label">SAFE CUSTOMERS</div>
+                <div class="stat-bar" style="--fill: {{ (((total_customers - total_churners) / total_customers) * 100) | int }}%; --color: #4ade80;"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value mono">{{ ((total_churners / total_customers) * 100) | round(1) }}%</div>
+                <div class="stat-label">CHURN RATE</div>
+                <div class="stat-bar" style="--fill: {{ ((total_churners / total_customers) * 100) | int }}%; --color: #fb923c;"></div>
+            </div>
+        </div>
+
+        {% if total_churners == 0 %}
+        <div class="alert-success">
+            <span class="alert-icon">✓</span>
+            Great news — no customers are predicted to churn in this dataset.
+        </div>
+        {% endif %}
+
+        <div class="table-card">
+            <div class="table-toolbar">
+                <div class="table-title">Customer Predictions</div>
+                <div class="table-count">{{ results | length }} records</div>
+            </div>
+            <div class="table-scroll">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>CUSTOMER</th>
+                            <th>CHURN RISK</th>
+                            <th>RETENTION RECOMMENDATIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in results %}
+                        <tr class="{{ 'row-danger' if row.churn_predicted == 1 else 'row-safe' }}">
+                            <td class="mono customer-id">#{{ '%04d' % row.customer_index }}</td>
+                            <td>
+                                {% if row.churn_predicted == 1 %}
+                                    <span class="badge badge-danger">● High Risk</span>
+                                {% else %}
+                                    <span class="badge badge-safe">● Safe</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if row.recommendations %}
+                                    <ul class="rec-list">
+                                        {% for rec in row.recommendations %}
+                                            <li><span class="rec-arrow">▸</span> {{ rec }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <span class="no-action">No action needed</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="results-footer">
+            <a href="/" class="btn-primary">
+                <span>Analyse Another File</span>
+                <span class="btn-arrow">→</span>
+            </a>
+        </div>
+    </main>
+</body>
+</html>

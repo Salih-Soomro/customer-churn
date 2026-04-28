@@ -1,7 +1,7 @@
 # Project Status & Blueprint
 
 ## Current Status
-Step: 6 — Flask backend complete
+Step: 7 — Frontend HTML and CSS complete
 Last updated: 2026-04-28
 
 ## Steps Checklist
