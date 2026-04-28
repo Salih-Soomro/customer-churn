@@ -10,7 +10,7 @@ Last updated: 2026-04-28
 - [x] Step 2: Data preprocessing
 - [x] Step 3: Model training
 - [x] Step 4: Model evaluation
-- [ ] Step 5: Retention recommendation agent
+- [x] Step 5: Retention recommendation agent
 - [ ] Step 6: Flask web app backend
 - [ ] Step 7: HTML/CSS frontend
 - [ ] Step 8: End-to-end testing and final cleanup
@@ -37,7 +37,12 @@ Name: Logistic Regression
 Saved as: models/best_model.pkl
 
 ## Retention Rules (fill after Step 5)
-[document the if/else rules here]
+1. MonthlyCharges > 70       → Offer a discounted monthly plan
+2. tenure < 12               → Assign a dedicated customer success manager
+3. Contract == Month-to-month → Offer a 1-year or 2-year contract discount
+4. TechSupport == No         → Offer free tech support upgrade for 3 months
+5. Fiber optic + charges > 80 → Offer fiber loyalty discount
+6. Always                    → Send a personalized retention email
 
 ## Known Issues / TODOs
 [list anything incomplete]
