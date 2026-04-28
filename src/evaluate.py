@@ -24,11 +24,21 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test, scaler, feature_names = load_and_preprocess("data/raw/telco_churn.csv")
     best_model = joblib.load("models/best_model.pkl")
 
+    # Fix C — Load optimal threshold
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    threshold_path = os.path.join(BASE_DIR, "models", "threshold.pkl")
+    if os.path.exists(threshold_path):
+        optimal_threshold = joblib.load(threshold_path)
+        print(f"Using optimal threshold: {optimal_threshold:.2f}")
+    else:
+        optimal_threshold = 0.5
+
     # 4c. Generate predictions
-    y_pred = best_model.predict(X_test)
     try:
         y_prob = best_model.predict_proba(X_test)[:, 1]
+        y_pred = (y_prob >= optimal_threshold).astype(int)
     except AttributeError:
+        y_pred = best_model.predict(X_test)
         y_prob = y_pred
 
     # 4d. Print metrics

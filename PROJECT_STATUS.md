@@ -1,7 +1,7 @@
 # Project Status & Blueprint
 
 ## Current Status
-Step: 8 — PROJECT COMPLETE (Accuracy Fix Applied)
+Step: 8 — PROJECT COMPLETE (Threshold Tuning & Honest CV Applied)
 Last updated: 2026-04-28
 
 ## Steps Checklist
@@ -23,30 +23,26 @@ Last updated: 2026-04-28
 - Features used: 48+
 
 ## Model Performance
-| Model               | Accuracy | Precision | Recall | F1 Score | CV F1  |
-|---------------------|----------|-----------|--------|----------|--------|
-| Logistic Regression | 0.7622   | 0.5330    | 0.8231 | 0.6470   | 0.6226 |
-| Decision Tree       | 0.7466   | 0.5221    | 0.5067 | 0.5143   | 0.4859 |
-| Random Forest       | 0.7963   | 0.6680    | 0.4584 | 0.5437   | 0.5410 |
-| Gradient Boosting   | 0.7622   | 0.5321    | 0.8445 | 0.6528   | 0.7730 |
+| Model                               | Accuracy | Precision | Recall | F1 Score | CV F1 (honest) |
+|-------------------------------------|----------|-----------|--------|----------|----------------|
+| Logistic Regression                 | 0.7622   | 0.5330    | 0.8231 | 0.6470   | 0.6226         |
+| Decision Tree                       | 0.7466   | 0.5221    | 0.5067 | 0.5143   | 0.4859         |
+| Random Forest                       | 0.7963   | 0.6680    | 0.4584 | 0.5437   | 0.5410         |
+| Gradient Boosting                   | 0.7764   | 0.5551    | 0.7828 | 0.6496   | 0.5551         |
+| **Tuned GB + Optimal Threshold**   | **0.7750**| **0.5498**| **0.8284**| **0.6610**| **0.5756**    |
 
 ## Best Model
-Name: Gradient Boosting (tuned via GridSearchCV with scoring='f1')
-Best params: learning_rate=0.05, max_depth=3, n_estimators=100
-Saved as: models/best_model.pkl
+Name: Gradient Boosting (tuned via GridSearchCV, Optimal Threshold applied)
+Best params: learning_rate=0.05, max_depth=3, n_estimators=200
+Optimal Threshold: 0.52
+Saved as: models/best_model.pkl, models/threshold.pkl
 
 ## Improvements Applied
-- class_weight='balanced' added to LR, DT, and RF
-- compute_sample_weight('balanced') used for GradientBoosting
-- GridSearchCV scoring corrected to 'f1' (was defaulting to accuracy)
-- Feature engineering: AvgMonthlyCharge, IsNewCustomer, HasMultipleServices
-- 5-fold cross-validation for all models
-- Expanded hyperparameter grids for GridSearchCV
-- Churn probability display (predict_proba) in results
-- Table filtering (Show All / High Risk Only)
-- Pagination (50 rows per page)
-- Feature importance chart saved to outputs/evaluation/feature_importance.png
-- Hardcoded paths replaced with absolute paths (BASE_DIR)
+- **Threshold Tuning**: Optimal decision threshold (0.52) found to balance Precision/Recall and maximize F1.
+- **Honest CV**: GridSearchCV scoring fixed to be unweighted to reflect real-world performance accurately.
+- **Class Balancing**: `compute_sample_weight('balanced')` used for GradientBoosting retraining.
+- **Feature Engineering**: AvgMonthlyCharge, IsNewCustomer, HasMultipleServices.
+- **UI/UX**: Added Churn Probability, Filter Bar, and Pagination to results page.
 
 ## Retention Rules
 1. MonthlyCharges > 70        → Offer a discounted monthly plan
@@ -57,12 +53,9 @@ Saved as: models/best_model.pkl
 6. Always                     → Send a personalized retention email
 
 ## Final Summary
-This project is an AI-powered web application that predicts customer churn
-using four machine learning models trained on the Kaggle Telco dataset.
-The best performing model (Gradient Boosting) is saved and served via a Flask
-web interface. Users can upload a CSV file, view churn predictions with
-probability scores per customer, and see personalized retention recommendations
-for high-risk customers.
+This project is an AI-powered web application that predicts customer churn using a tuned Gradient Boosting model.
+Users can upload a CSV file, view churn predictions with probability scores, and see personalized retention recommendations.
+The model uses an optimal decision threshold of 0.52 to provide the best balance of Precision and Recall.
 
 ## Known Issues / TODOs
 None — project is complete.

@@ -46,8 +46,16 @@ def predict():
         best_model = joblib.load(os.path.join(BASE_DIR, "models", "best_model.pkl"))
         scaler = joblib.load(os.path.join(BASE_DIR, "models", "scaler.pkl"))
         feature_names = joblib.load(os.path.join(BASE_DIR, "models", "feature_names.pkl"))
+        
+        # Fix B — Load optimal threshold
+        threshold_path = os.path.join(BASE_DIR, "models", "threshold.pkl")
+        if os.path.exists(threshold_path):
+            optimal_threshold = joblib.load(threshold_path)
+        else:
+            optimal_threshold = 0.5
 
         # Step 5 — Preprocess the uploaded data
+        # ... (rest of preprocessing remains the same)
         if "customerID" in customer_data.columns:
             customer_data = customer_data.drop(columns=["customerID"])
 
@@ -79,8 +87,9 @@ def predict():
         scaled_data = scaler.transform(customer_data)
 
         # Step 6 — Run predictions and get churn probabilities
-        predictions = best_model.predict(scaled_data)
         churn_probabilities = best_model.predict_proba(scaled_data)[:, 1]
+        # Use optimal threshold
+        predictions = (churn_probabilities >= optimal_threshold).astype(int)
 
         # Step 7 — Build results list
         results = []
