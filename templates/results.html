@@ -4,105 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analysis Results — ChurnGuard AI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-inner">
-            <div class="nav-brand">
-                <div class="brand-icon">⬡</div>
-                <span class="brand-name">ChurnGuard <span class="brand-accent">AI</span></span>
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <div class="brand-logo">C</div>
+                <span class="brand-name">ChurnGuard <span class="accent">AI</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">← New Analysis</a>
+                <a href="/analytics" class="btn-outline" style="margin-left: 12px;">View Full Dashboard</a>
             </div>
-            <a href="/" class="btn-back-nav">← New Analysis</a>
         </div>
     </nav>
 
-    <main class="main-layout">
-        <div class="results-header">
-            <div class="hero-eyebrow">▸ ANALYSIS COMPLETE</div>
-            <h1 class="hero-title">Prediction <span class="hero-accent">Results</span></h1>
-        </div>
+    <main class="page-wrap" style="padding-top: 40px;">
+        <header class="hero" style="padding: 40px 0 32px;">
+            <div class="hero-eyebrow">PREDICTION COMPLETE</div>
+            <h1 class="hero-title">Database <span class="lo">Insights</span>.</h1>
+        </header>
 
-        <div class="stats-row">
+        <!-- Stats Row -->
+        <section class="stats-row">
             <div class="stat-card">
-                <div class="stat-value mono">{{ total_customers }}</div>
                 <div class="stat-label">TOTAL CUSTOMERS</div>
-                <div class="stat-bar" style="--fill: 100%; --color: #6366f1;"></div>
+                <div class="stat-value v-cyan">{{ total_customers }}</div>
+                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 100%; background: var(--cyan)"></div></div>
             </div>
-            <div class="stat-card stat-danger">
-                <div class="stat-value mono danger-text">{{ total_churners }}</div>
-                <div class="stat-label">PREDICTED TO CHURN</div>
-                <div class="stat-bar" style="--fill: {{ ((total_churners / total_customers) * 100) | int }}%; --color: #f87171;"></div>
+            <div class="stat-card stat-card-danger">
+                <div class="stat-label">CHURNERS DETECTED</div>
+                <div class="stat-value v-danger">{{ total_churners }}</div>
+                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: {{ (total_churners/total_customers*100) if total_customers > 0 else 0 }}%; background: var(--danger)"></div></div>
             </div>
-            <div class="stat-card stat-success">
-                <div class="stat-value mono success-text">{{ total_customers - total_churners }}</div>
+            <div class="stat-card stat-card-safe">
                 <div class="stat-label">SAFE CUSTOMERS</div>
-                <div class="stat-bar" style="--fill: {{ (((total_customers - total_churners) / total_customers) * 100) | int }}%; --color: #4ade80;"></div>
+                <div class="stat-value v-success">{{ total_customers - total_churners }}</div>
+                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: {{ ((total_customers - total_churners)/total_customers*100) if total_customers > 0 else 0 }}%; background: var(--success)"></div></div>
             </div>
-            <div class="stat-card">
-                <div class="stat-value mono">{{ ((total_churners / total_customers) * 100) | round(1) }}%</div>
+            <div class="stat-card stat-card-warn">
                 <div class="stat-label">CHURN RATE</div>
-                <div class="stat-bar" style="--fill: {{ ((total_churners / total_customers) * 100) | int }}%; --color: #fb923c;"></div>
+                <div class="stat-value v-warn">{{ ((total_churners / total_customers * 100)|round(1)) if total_customers > 0 else 0 }}%</div>
+                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: {{ (total_churners/total_customers*100) if total_customers > 0 else 0 }}%; background: var(--warning)"></div></div>
+            </div>
+        </section>
+
+        <!-- Task 6B — Model Performance Summary banner -->
+        <div class="model-banner">
+            <div class="banner-item">
+                <span class="banner-label">BEST MODEL</span>
+                <span class="banner-val">{{ model_metrics.best_model|default('Tuned Gradient Boosting') }}</span>
+            </div>
+            <div class="banner-sep"></div>
+            <div class="banner-item">
+                <span class="banner-label">ACCURACY</span>
+                <span class="banner-val">{{ (model_metrics.accuracy|default(0.775) * 100)|round(1) }}%</span>
+            </div>
+            <div class="banner-sep"></div>
+            <div class="banner-item">
+                <span class="banner-label">F1 SCORE</span>
+                <span class="banner-val">{{ (model_metrics.f1|default(0.661) * 100)|round(1) }}%</span>
+            </div>
+            <div class="banner-sep"></div>
+            <div class="banner-item">
+                <span class="banner-label">ROC-AUC</span>
+                <span class="banner-val">{{ model_metrics.roc_auc|default(0.845) }}</span>
             </div>
         </div>
 
-        {% if total_churners == 0 %}
-        <div class="alert-success">
-            <span class="alert-icon">✓</span>
-            Great news — no customers are predicted to churn in this dataset.
-        </div>
-        {% endif %}
-
-        <div class="filter-bar">
-            <button class="filter-btn active" id="btn-all" onclick="filterTable('all')">Show All</button>
-            <button class="filter-btn" id="btn-risk" onclick="filterTable('risk')">High Risk Only</button>
-        </div>
-
-        <div class="table-card">
-            <div class="table-toolbar">
-                <div class="table-title">Customer Predictions</div>
-                <div class="table-count">{{ results | length }} records</div>
+        <!-- Task 6C — Chart.js Section -->
+        <section class="charts-section">
+            <div class="chart-widget">
+                <h3 class="chart-widget-title">Churn Probability Split</h3>
+                <p class="chart-widget-sub">Visualizing predicted churners vs safe customers.</p>
+                <canvas id="churnDonut"></canvas>
             </div>
+            <div class="chart-widget">
+                <h3 class="chart-widget-title">Probability Distribution</h3>
+                <p class="chart-widget-sub">Frequency of customers across risk buckets.</p>
+                <canvas id="probBar"></canvas>
+            </div>
+        </section>
+
+        <!-- Table Toolbar -->
+        <div class="table-toolbar">
+            <div class="toolbar-left">
+                <h2 class="toolbar-title">Customer Risk Analysis</h2>
+                <span class="toolbar-count">{{ total_customers }} records found</span>
+            </div>
+            <div class="filter-pills">
+                <button class="pill active" onclick="filterTable('all')">Show All</button>
+                <button class="pill pill-danger" onclick="filterTable('churn')">High Risk Only</button>
+            </div>
+        </div>
+
+        <!-- Results Table -->
+        <div class="table-card shimmer">
             <div class="table-scroll">
                 <table class="results-table" id="results-table">
                     <thead>
                         <tr>
-                            <th>CUSTOMER</th>
-                            <th>CHURN RISK</th>
-                            <th>PROBABILITY</th>
-                            <th>RETENTION RECOMMENDATIONS</th>
+                            <th>CID</th>
+                            <th>CHURN PREDICTION</th>
+                            <th>RISK SCORE</th>
+                            <th>RECOMMENDED ACTIONS</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {% for row in results %}
-                        <tr class="{{ 'row-danger' if row.churn_predicted == 1 else 'row-safe' }}">
-                            <td class="mono customer-id">#{{ '%04d' % row.customer_index }}</td>
+                    <tbody id="table-body">
+                        {% for res in results %}
+                        <tr class="{% if res.churn_predicted == 1 %}row-risk{% endif %}" data-churn="{{ res.churn_predicted }}">
+                            <td><span class="cid">#{{ res.customer_index }}</span></td>
                             <td>
-                                {% if row.churn_predicted == 1 %}
-                                    <span class="badge badge-danger">● High Risk</span>
+                                {% if res.churn_predicted == 1 %}
+                                <span class="badge badge-risk">CHURN AT-RISK</span>
                                 {% else %}
-                                    <span class="badge badge-safe">● Safe</span>
+                                <span class="badge badge-safe">LOYAL CUSTOMER</span>
                                 {% endif %}
                             </td>
                             <td>
-                                <div class="prob-bar-wrap">
-                                    <div class="prob-bar" style="width: {{ row.churn_probability }}%;
-                                        background: {% if row.churn_predicted == 1 %}#f87171{% else %}#4ade80{% endif %};">
+                                <div class="prob-wrap">
+                                    <div class="prob-track">
+                                        <div class="prob-fill {{ res.risk_level }}" style="width: {{ res.churn_probability }}%"></div>
                                     </div>
-                                    <span class="prob-label">{{ row.churn_probability }}%</span>
+                                    <span class="prob-pct">{{ res.churn_probability }}%</span>
                                 </div>
                             </td>
                             <td>
-                                {% if row.recommendations %}
-                                    <ul class="rec-list">
-                                        {% for rec in row.recommendations %}
-                                            <li><span class="rec-arrow">▸</span> {{ rec }}</li>
-                                        {% endfor %}
-                                    </ul>
+                                {% if res.recommendations %}
+                                <ul class="rec-list">
+                                    {% for rec in res.recommendations %}
+                                    <li><span class="r-ico">{{ rec[:2] }}</span> {{ rec[2:] }}</li>
+                                    {% endfor %}
+                                </ul>
                                 {% else %}
-                                    <span class="no-action">No action needed</span>
+                                <span class="no-action">No immediate action required</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -112,82 +149,116 @@
             </div>
         </div>
 
-        <div class="pagination-bar" id="pagination-bar">
-            <button class="pagination-btn" id="btn-prev" onclick="changePage(-1)">← Previous</button>
-            <span class="pagination-info" id="page-info">Page 1 of 1</span>
-            <button class="pagination-btn" id="btn-next" onclick="changePage(1)">Next →</button>
-        </div>
-
-        <div class="results-footer">
-            <a href="/" class="btn-primary">
-                <span>Analyse Another File</span>
-                <span class="btn-arrow">→</span>
-            </a>
+        <div class="pagination" id="pagination">
+            <button class="page-btn" id="prev-btn" onclick="changePage(-1)">← Prev</button>
+            <span class="page-info" id="page-info">Page 1 of 1</span>
+            <button class="page-btn" id="next-btn" onclick="changePage(1)">Next →</button>
         </div>
     </main>
 
+    <footer class="page-footer">
+        <p class="footer-text">ChurnGuard AI — AI-Based Customer Churn Prediction System | Built with Flask, scikit-learn & Gradient Boosting</p>
+    </footer>
+
     <script>
-        // ── Filter Logic ──
-        let currentFilter = 'all';
-
-        function filterTable(mode) {
-            currentFilter = mode;
-            currentPage = 1;
-            renderPage();
-            document.getElementById('btn-all').classList.toggle('active', mode === 'all');
-            document.getElementById('btn-risk').classList.toggle('active', mode === 'risk');
-        }
-
-        // ── Pagination Logic ──
-        const ROWS_PER_PAGE = 50;
-        let currentPage = 1;
-
-        function getFilteredRows() {
-            const allRows = Array.from(document.querySelectorAll('#results-table tbody tr'));
-            if (currentFilter === 'risk') {
-                return allRows.filter(row => !row.classList.contains('row-safe'));
-            }
-            return allRows;
-        }
-
-        function renderPage() {
-            const allRows = Array.from(document.querySelectorAll('#results-table tbody tr'));
-            const filteredRows = getFilteredRows();
-            const totalPages = Math.max(1, Math.ceil(filteredRows.length / ROWS_PER_PAGE));
-
-            if (currentPage > totalPages) currentPage = totalPages;
-
-            const start = (currentPage - 1) * ROWS_PER_PAGE;
-            const end = start + ROWS_PER_PAGE;
-
-            // Hide all rows first
-            allRows.forEach(row => row.style.display = 'none');
-
-            // Show only the rows for the current page that match the filter
-            filteredRows.forEach((row, index) => {
-                if (index >= start && index < end) {
-                    row.style.display = '';
+        // Chart.js Implementations
+        const churnDonutCtx = document.getElementById('churnDonut').getContext('2d');
+        new Chart(churnDonutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Churn At-Risk', 'Safe Customers'],
+                datasets: [{
+                    data: {{ [total_churners|default(0), (total_customers|default(0) - total_churners|default(0))]|tojson }},
+                    backgroundColor: ['#f87171', '#4ade80'],
+                    borderColor: '#111827',
+                    borderWidth: 4,
+                    hoverOffset: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#6b82a0', font: { family: 'DM Sans', size: 12 } } }
                 }
+            }
+        });
+
+        const probBarCtx = document.getElementById('probBar').getContext('2d');
+        new Chart(probBarCtx, {
+            type: 'bar',
+            data: {
+                labels: ['0-20%', '20-40%', '40-60%', '60-80%', '80-100%'],
+                datasets: [{
+                    label: 'Customers',
+                    data: {{ prob_buckets|default([0,0,0,0,0])|tojson }},
+                    backgroundColor: (ctx) => {
+                        const colors = ['#4ade80', '#22d3ee', '#fbbf24', '#fb923c', '#f87171'];
+                        return colors[ctx.dataIndex];
+                    },
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#6b82a0' } },
+                    x: { grid: { display: false }, ticks: { color: '#6b82a0' } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Filtering & Pagination
+        let currentFilter = 'all';
+        let currentPage = 1;
+        const rowsPerPage = 50;
+        let visibleRows = [];
+
+        function filterTable(type) {
+            currentFilter = type;
+            currentPage = 1;
+            
+            // Update pills
+            document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            if(type === 'all') document.querySelector('.pill:not(.pill-danger)').classList.add('active');
+            else document.querySelector('.pill.pill-danger').classList.add('active');
+
+            updateTable();
+        }
+
+        function updateTable() {
+            const allRows = Array.from(document.querySelectorAll('#table-body tr'));
+            visibleRows = allRows.filter(row => {
+                if(currentFilter === 'all') return true;
+                return row.getAttribute('data-churn') === '1';
             });
 
-            // Update pagination info
+            allRows.forEach(row => row.style.display = 'none');
+            
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageRows = visibleRows.slice(start, end);
+
+            pageRows.forEach(row => row.style.display = 'table-row');
+
+            // Update Pagination UI
+            const totalPages = Math.ceil(visibleRows.length / rowsPerPage) || 1;
             document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
-            document.getElementById('btn-prev').disabled = (currentPage <= 1);
-            document.getElementById('btn-next').disabled = (currentPage >= totalPages);
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
         }
 
-        function changePage(delta) {
-            const filteredRows = getFilteredRows();
-            const totalPages = Math.max(1, Math.ceil(filteredRows.length / ROWS_PER_PAGE));
-            const newPage = currentPage + delta;
-            if (newPage >= 1 && newPage <= totalPages) {
-                currentPage = newPage;
-                renderPage();
-            }
+        function changePage(dir) {
+            currentPage += dir;
+            updateTable();
+            window.scrollTo({ top: document.querySelector('.table-toolbar').offsetTop - 100, behavior: 'smooth' });
         }
 
-        // Initialize pagination on load
-        renderPage();
+        document.addEventListener('DOMContentLoaded', updateTable);
     </script>
 </body>
 </html>

@@ -3,96 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChurnGuard AI — Customer Churn Predictor</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>ChurnGuard AI — Upload Data</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-inner">
-            <div class="nav-brand">
-                <div class="brand-icon">⬡</div>
-                <span class="brand-name">ChurnGuard <span class="brand-accent">AI</span></span>
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <div class="brand-logo">C</div>
+                <span class="brand-name">ChurnGuard <span class="accent">AI</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="/analytics" class="nav-link">Analytics Dashboard</a>
             </div>
-            <div class="nav-badge">ML-Powered Analytics</div>
         </div>
     </nav>
 
-    <main class="main-layout">
-        <div class="hero-section">
-            <div class="hero-eyebrow">▸ POWERED BY RANDOM FOREST & LOGISTIC REGRESSION</div>
-            <h1 class="hero-title">Predict. Understand.<br><span class="hero-accent">Retain.</span></h1>
-            <p class="hero-subtitle">
-                Upload your customer dataset and let AI instantly identify who is at risk of churning — with actionable retention strategies for each customer.
-            </p>
-        </div>
+    <main class="page-wrap">
+        <header class="hero">
+            <div class="hero-eyebrow">PREDICTIVE CUSTOMER ANALYTICS</div>
+            <h1 class="hero-title">Predict Churn with <span class="hi">Precision</span>.</h1>
+            <p class="hero-sub">Upload your customer database to identify high-risk accounts and receive automated retention strategies powered by Gradient Boosting.</p>
+        </header>
 
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="alert-error">
-                    <span class="alert-icon">⚠</span>
-                    {% for message in messages %}
-                        <span>{{ message }}</span>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+        <section class="upload-zone">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="alert alert-error">
+                    <span class="alert-icon">⚠️</span>
+                    <p>{{ message }}</p>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
 
-        <div class="card upload-card">
-            <div class="card-header">
-                <div class="card-title">Upload Customer Data</div>
-                <div class="card-subtitle">Accepts Telco-format CSV files</div>
+            <div class="card card-cyan shimmer">
+                <form action="/predict" method="POST" enctype="multipart/form-data" id="upload-form">
+                    <div class="drop-area" id="drop-area">
+                        <div class="drop-icon">📂</div>
+                        <h3 class="drop-primary">Drop CSV here</h3>
+                        <p class="drop-secondary">or <span>browse files</span> from your computer</p>
+                        <p class="drop-hint" id="file-name">Supported format: .csv (Kaggle Telco standard)</p>
+                        <input type="file" name="file" id="file-input" required>
+                    </div>
+                    <button type="submit" class="btn-run">
+                        <span>Analyze Database</span>
+                        <div class="arrow">→</div>
+                    </button>
+                </form>
             </div>
+        </section>
 
-            <form action="/predict" method="POST" enctype="multipart/form-data">
-                <label for="file" class="drop-zone" id="drop-zone">
-                    <div class="drop-icon">↑</div>
-                    <div class="drop-primary">Drop your CSV file here</div>
-                    <div class="drop-secondary">or <span class="drop-link">browse to upload</span></div>
-                    <div class="drop-hint" id="file-name-display">Supports .csv format only</div>
-                    <input type="file" id="file" name="file" accept=".csv" required>
-                </label>
-
-                <button type="submit" class="btn-primary">
-                    <span>Run Churn Analysis</span>
-                    <span class="btn-arrow">→</span>
-                </button>
-            </form>
-        </div>
-
-        <div class="steps-grid">
+        <section class="steps-grid">
             <div class="step-card">
-                <div class="step-number">01</div>
-                <div class="step-text">Upload a CSV with customer data in Telco format</div>
+                <div class="step-num">01</div>
+                <p class="step-text"><strong>Upload CSV</strong> containing customer tenure, monthly charges, and service details.</p>
             </div>
             <div class="step-card">
-                <div class="step-number">02</div>
-                <div class="step-text">AI model analyses each customer's profile and usage patterns</div>
+                <div class="step-num">02</div>
+                <p class="step-text"><strong>Model Analysis</strong>: Our Gradient Boosting engine processes 48+ features in milliseconds.</p>
             </div>
             <div class="step-card">
-                <div class="step-number">03</div>
-                <div class="step-text">High-risk customers are flagged with a churn prediction</div>
+                <div class="step-num">03</div>
+                <p class="step-text"><strong>Risk Scoring</strong>: Customers are ranked by their mathematical probability of leaving.</p>
             </div>
             <div class="step-card">
-                <div class="step-number">04</div>
-                <div class="step-text">Personalised retention actions are recommended instantly</div>
+                <div class="step-num">04</div>
+                <p class="step-text"><strong>Retention Agent</strong>: Receive custom offers to keep high-value customers loyal.</p>
             </div>
-        </div>
+        </section>
     </main>
 
-    <script>
-        const fileInput = document.getElementById('file');
-        const fileNameDisplay = document.getElementById('file-name-display');
-        const dropZone = document.getElementById('drop-zone');
+    <footer class="page-footer">
+        <p class="footer-text">ChurnGuard AI — AI-Based Customer Churn Prediction System | Built with Flask, scikit-learn & Gradient Boosting</p>
+    </footer>
 
-        fileInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                fileNameDisplay.textContent = '✓ ' + this.files[0].name;
-                fileNameDisplay.style.color = '#818cf8';
-                dropZone.style.borderColor = 'rgba(99,102,241,0.7)';
-                dropZone.style.background = 'rgba(99,102,241,0.07)';
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p class="loading-text">Analyzing customer behavior patterns...</p>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const dropArea = document.getElementById('drop-area');
+        const fileName = document.getElementById('file-name');
+        const uploadForm = document.getElementById('upload-form');
+        const loadingOverlay = document.getElementById('loading-overlay');
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                fileName.textContent = `Ready: ${fileInput.files[0].name}`;
+                fileName.classList.add('ready');
             }
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropArea.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropArea.classList.remove('dragover');
+            });
+        });
+
+        uploadForm.addEventListener('submit', () => {
+            loadingOverlay.classList.add('show');
+        });
+
+        // Fix: Click on 'browse files' text triggers file input
+        document.querySelector('.drop-secondary span').addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.click();
         });
     </script>
 </body>

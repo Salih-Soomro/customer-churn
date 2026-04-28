@@ -170,3 +170,44 @@ if __name__ == "__main__":
     print(f"Saved: models/threshold.pkl (optimal threshold = {best_threshold:.2f})")
     print("Saved: models/scaler.pkl")
     print("Saved: models/feature_names.pkl")
+
+    # Task 1 — Save metrics.json
+    import json
+    metrics_data = {
+        "best_model": f"Tuned {best_model_name}",
+        "threshold": round(float(best_threshold), 2),
+        "accuracy": round(final_acc, 4),
+        "precision": round(final_prec, 4),
+        "recall": round(final_rec, 4),
+        "f1": round(final_f1, 4),
+        "cv_f1": round(honest_cv_f1, 4),
+        "comparison": []
+    }
+    
+    for name, m in results.items():
+        if not name.startswith("Tuned"):
+            metrics_data["comparison"].append({
+                "name": name,
+                "accuracy": round(m["accuracy"], 4),
+                "precision": round(m["precision"], 4),
+                "recall": round(m["recall"], 4),
+                "f1": round(m["f1"], 4),
+                "cv_f1": round(m["cv_f1"], 4)
+            })
+    
+    # Add the tuned one specifically if it exists in results
+    tuned_key = f"Tuned {best_model_name} + Threshold"
+    if tuned_key in results:
+        m = results[tuned_key]
+        metrics_data["comparison"].append({
+            "name": "Tuned GB + Threshold",
+            "accuracy": round(m["accuracy"], 4),
+            "precision": round(m["precision"], 4),
+            "recall": round(m["recall"], 4),
+            "f1": round(m["f1"], 4),
+            "cv_f1": round(m["cv_f1"], 4)
+        })
+
+    with open(os.path.join(BASE_DIR, "models", "metrics.json"), "w") as f:
+        json.dump(metrics_data, f, indent=2)
+    print("Saved: models/metrics.json")

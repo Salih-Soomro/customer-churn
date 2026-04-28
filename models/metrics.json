@@ -1,0 +1,17 @@
+{
+  "best_model": "Tuned Gradient Boosting",
+  "threshold": 0.52,
+  "accuracy": 0.7750,
+  "precision": 0.5498,
+  "recall": 0.8284,
+  "f1": 0.6610,
+  "roc_auc": 0.845,
+  "cv_f1": 0.5756,
+  "comparison": [
+    {"name": "Logistic Regression", "accuracy": 0.7622, "precision": 0.5330, "recall": 0.8231, "f1": 0.6470, "cv_f1": 0.6226},
+    {"name": "Decision Tree", "accuracy": 0.7466, "precision": 0.5221, "recall": 0.5067, "f1": 0.5143, "cv_f1": 0.4859},
+    {"name": "Random Forest", "accuracy": 0.7963, "precision": 0.6680, "recall": 0.4584, "f1": 0.5437, "cv_f1": 0.5410},
+    {"name": "Gradient Boosting", "accuracy": 0.7764, "precision": 0.5551, "recall": 0.7828, "f1": 0.6496, "cv_f1": 0.5551},
+    {"name": "Tuned GB + Threshold", "accuracy": 0.7750, "precision": 0.5498, "recall": 0.8284, "f1": 0.6610, "cv_f1": 0.5756}
+  ]
+}

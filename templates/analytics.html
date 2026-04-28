@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard — ChurnGuard AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <div class="brand-logo">C</div>
+                <span class="brand-name">ChurnGuard <span class="accent">AI</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">New Analysis</a>
+                <a href="/analytics" class="nav-link active">Analytics Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page-wrap">
+        <header class="page-header">
+            <div class="page-header-inner">
+                <div>
+                    <h1 class="page-header-title">Model <span>Analytics</span> & EDA Dashboard</h1>
+                    <p class="page-header-sub">Comprehensive performance breakdown of the <strong>{{ model_metrics.best_model|default('Tuned Gradient Boosting') }}</strong> engine.</p>
+                </div>
+                <div class="nav-chip">Threshold: {{ model_metrics.threshold|default(0.52) }}</div>
+            </div>
+        </header>
+
+        <!-- SECTION 2 — Metric Cards -->
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Accuracy</div>
+                <div class="metric-value" style="color: var(--cyan)">{{ (model_metrics.accuracy|default(0) * 100)|round(1) }}%</div>
+                <div class="metric-bar-track">
+                    <div class="metric-bar-fill" style="width: {{ model_metrics.accuracy|default(0) * 100 }}%; background: var(--cyan)"></div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Precision</div>
+                <div class="metric-value" style="color: var(--violet)">{{ (model_metrics.precision|default(0) * 100)|round(1) }}%</div>
+                <div class="metric-bar-track">
+                    <div class="metric-bar-fill" style="width: {{ model_metrics.precision|default(0) * 100 }}%; background: var(--violet)"></div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Recall</div>
+                <div class="metric-value" style="color: var(--success)">{{ (model_metrics.recall|default(0) * 100)|round(1) }}%</div>
+                <div class="metric-bar-track">
+                    <div class="metric-bar-fill" style="width: {{ model_metrics.recall|default(0) * 100 }}%; background: var(--success)"></div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">F1 Score</div>
+                <div class="metric-value" style="color: var(--warning)">{{ (model_metrics.f1|default(0) * 100)|round(1) }}%</div>
+                <div class="metric-bar-track">
+                    <div class="metric-bar-fill" style="width: {{ model_metrics.f1|default(0) * 100 }}%; background: var(--warning)"></div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">ROC-AUC</div>
+                <div class="metric-value" style="color: #67e8f9">{{ model_metrics.roc_auc|default(0) }}</div>
+                <div class="metric-bar-track">
+                    <div class="metric-bar-fill" style="width: {{ model_metrics.roc_auc|default(0) * 100 }}%; background: #67e8f9"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3 — Model Comparison -->
+        <div class="section-header">
+            <h2 class="section-title">Model Performance Comparison</h2>
+            <div class="section-line"></div>
+            <div class="section-tag">Cross-Validated F1</div>
+        </div>
+        
+        <div class="comp-table-wrap">
+            <table class="comp-table">
+                <thead>
+                    <tr>
+                        <th>Model Name</th>
+                        <th>Accuracy</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1 Score</th>
+                        <th>CV F1 (Honest)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in model_metrics.comparison %}
+                    <tr class="{% if 'Tuned' in m.name %}best-row{% endif %}">
+                        <td>
+                            {{ m.name }}
+                            {% if 'Tuned' in m.name %}
+                            <span class="best-row-mark">★ BEST MODEL</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ (m.accuracy * 100)|round(1) }}%</td>
+                        <td>{{ (m.precision * 100)|round(1) }}%</td>
+                        <td>{{ (m.recall * 100)|round(1) }}%</td>
+                        <td>{{ (m.f1 * 100)|round(1) }}%</td>
+                        <td>{{ m.cv_f1|round(4) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SECTION 4 — Evaluation Charts -->
+        <div class="section-header">
+            <h2 class="section-title">Model Evaluation Metrics</h2>
+            <div class="section-line"></div>
+        </div>
+        
+        <div class="img-chart-grid-3">
+            <div class="img-chart-card">
+                <div class="img-chart-head">
+                    <div class="img-chart-dot" style="background: var(--violet)"></div>
+                    <span class="img-chart-name">Confusion Matrix</span>
+                </div>
+                <div class="img-chart-body">
+                    {% if eval_charts.confusion_matrix %}
+                    <img src="data:image/png;base64,{{ eval_charts.confusion_matrix }}" alt="Confusion Matrix">
+                    {% else %}
+                    <img src="/outputs/evaluation/confusion_matrix.png" alt="Confusion Matrix">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="img-chart-card">
+                <div class="img-chart-head">
+                    <div class="img-chart-dot" style="background: var(--cyan)"></div>
+                    <span class="img-chart-name">ROC Curve</span>
+                </div>
+                <div class="img-chart-body">
+                    {% if eval_charts.roc_curve %}
+                    <img src="data:image/png;base64,{{ eval_charts.roc_curve }}" alt="ROC Curve">
+                    {% else %}
+                    <img src="/outputs/evaluation/roc_curve.png" alt="ROC Curve">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="img-chart-card">
+                <div class="img-chart-head">
+                    <div class="img-chart-dot" style="background: var(--warning)"></div>
+                    <span class="img-chart-name">Feature Importance</span>
+                </div>
+                <div class="img-chart-body">
+                    {% if eval_charts.feature_importance %}
+                    <img src="data:image/png;base64,{{ eval_charts.feature_importance }}" alt="Feature Importance">
+                    {% else %}
+                    <img src="/outputs/evaluation/feature_importance.png" alt="Feature Importance">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5 — EDA Charts -->
+        <div class="section-header">
+            <h2 class="section-title">Exploratory Data Analysis</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="img-chart-grid-2">
+            <div class="img-chart-card">
+                <div class="img-chart-head">
+                    <div class="img-chart-dot" style="background: var(--indigo)"></div>
+                    <span class="img-chart-name">Churn Distribution</span>
+                </div>
+                <div class="img-chart-body">
+                    {% if eda_charts.churn_distribution %}
+                    <img src="data:image/png;base64,{{ eda_charts.churn_distribution }}" alt="Churn Distribution">
+                    {% else %}
+                    <img src="/outputs/eda/churn_distribution.png" alt="Churn Distribution">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="img-chart-card">
+                <div class="img-chart-head">
+                    <div class="img-chart-dot" style="background: var(--indigo)"></div>
+                    <span class="img-chart-name">Tenure vs Churn</span>
+                </div>
+                <div class="img-chart-body">
+                    {% if eda_charts.tenure_vs_churn %}
+                    <img src="data:image/png;base64,{{ eda_charts.tenure_vs_churn }}" alt="Tenure vs Churn">
+                    {% else %}
+                    <img src="/outputs/eda/tenure_vs_churn.png" alt="Tenure vs Churn">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="img-chart-card">
+                <div class="img-chart-head">
+                    <div class="img-chart-dot" style="background: var(--indigo)"></div>
+                    <span class="img-chart-name">Charges vs Churn</span>
+                </div>
+                <div class="img-chart-body">
+                    {% if eda_charts.boxplots %}
+                    <img src="data:image/png;base64,{{ eda_charts.boxplots }}" alt="Charges vs Churn">
+                    {% else %}
+                    <img src="/outputs/eda/boxplots_charges_vs_churn.png" alt="Charges vs Churn">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="img-chart-card">
+                <div class="img-chart-head">
+                    <div class="img-chart-dot" style="background: var(--indigo)"></div>
+                    <span class="img-chart-name">Correlation Heatmap</span>
+                </div>
+                <div class="img-chart-body">
+                    {% if eda_charts.heatmap %}
+                    <img src="data:image/png;base64,{{ eda_charts.heatmap }}" alt="Correlation Heatmap">
+                    {% else %}
+                    <img src="/outputs/eda/correlation_heatmap.png" alt="Correlation Heatmap">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 6 — Retention Rules -->
+        <div class="section-header">
+            <h2 class="section-title">Intelligent Retention Rules</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="rules-grid">
+            <div class="rule-item">
+                <div class="rule-num">01</div>
+                <p class="rule-text"><strong>High Charges</strong>: MonthlyCharges > $70 → 15% discount offer.</p>
+            </div>
+            <div class="rule-item">
+                <div class="rule-num">02</div>
+                <p class="rule-text"><strong>Early Life</strong>: tenure < 12 months → Dedicated success manager.</p>
+            </div>
+            <div class="rule-item">
+                <div class="rule-num">03</div>
+                <p class="rule-text"><strong>Flexibility</strong>: Contract = Month-to-month → Long-term upgrade incentives.</p>
+            </div>
+            <div class="rule-item">
+                <div class="rule-num">04</div>
+                <p class="rule-text"><strong>Support Gap</strong>: TechSupport = No → Free 3-month support upgrade.</p>
+            </div>
+            <div class="rule-item">
+                <div class="rule-num">05</div>
+                <p class="rule-text"><strong>Fiber Loyalty</strong>: Fiber optic + >$80 charges → Specific loyalty discount.</p>
+            </div>
+            <div class="rule-item">
+                <div class="rule-num">06</div>
+                <p class="rule-text"><strong>Auto-Pay</strong>: Electronic check users → 5% discount for auto-pay switch.</p>
+            </div>
+            <div class="rule-item">
+                <div class="rule-num">07</div>
+                <p class="rule-text"><strong>Seniors</strong>: SeniorCitizen = Yes → Enroll in Senior Loyalty Program.</p>
+            </div>
+            <div class="rule-item">
+                <div class="rule-num">08</div>
+                <p class="rule-text"><strong>Bundling</strong>: Low service adoption → Suggest multi-service bundles.</p>
+            </div>
+            <div class="rule-item">
+                <div class="rule-num">09</div>
+                <p class="rule-text"><strong>Long-Term</strong>: tenure > 24m + high charges → VIP loyalty rewards.</p>
+            </div>
+            <div class="rule-item">
+                <div class="rule-num">10</div>
+                <p class="rule-text"><strong>Proactive</strong>: All high-risk customers → Personalized retention email.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <p class="footer-text">ChurnGuard AI — AI-Based Customer Churn Prediction System | Built with Flask, scikit-learn & Gradient Boosting</p>
+    </footer>
+</body>
+</html>
