@@ -31,7 +31,6 @@ def get_retention_recommendation(customer_row):
 
     return recommendations
 
-
 if __name__ == "__main__":
     test_customer = {
         "MonthlyCharges": 85,
@@ -53,4 +52,3 @@ if __name__ == "__main__":
 
     print()
     print(f"Total recommendations: {len(recommendations)}")
- 
